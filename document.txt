@@ -1,0 +1,4 @@
+removed line 216, 56, 36 for regular price 
+remove _regular_price from line 348
+added if statement for regular price, weight and wholesale price and get the value of sales price in $sale_price variable after line 363  
+removed 367 and 368
