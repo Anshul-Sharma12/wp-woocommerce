@@ -14,8 +14,10 @@ add_filter('wp_get_attachment_image_attributes', 'change_attachement_image_attri
     		// Get title
     		$title = get_post_field( 'post_title', $parent);
 
+			if( $attr['alt'] == ''){
     		$attr['alt'] = $title;
     		$attr['title'] = $title;
+			}
 
     		return $attr;
 		}
