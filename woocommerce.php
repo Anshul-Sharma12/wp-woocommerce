@@ -331,71 +331,71 @@ if (!class_exists('WP_Sheet_Editor_WooCommerce_Teaser')) {
 		 * WC 3.6 introduces a new lookup table, we need to sync some fields after every change.
 		 * @see https://woocommerce.wordpress.com/2019/04/01/performance-improvements-in-3-6/
 		 */
-		function _sync_product_lookup_table($product_id, $modified_data = array()) {
-   		global $wpdb;
+		// function _sync_product_lookup_table($product_id, $modified_data = array()) {
+   		// global $wpdb;
 
-    	$fields_that_dont_require_sync = array('ID', 'wpse_downloadable_file_urls', 'wpse_downloadable_file_names', 'id');
-    	$modified_data = array_diff($modified_data, $fields_that_dont_require_sync);
-    		if (empty($modified_data)) {
-       			return;
-    		}
+    	// $fields_that_dont_require_sync = array('ID', 'wpse_downloadable_file_urls', 'wpse_downloadable_file_names', 'id');
+    	// $modified_data = array_diff($modified_data, $fields_that_dont_require_sync);
+    	// 	if (empty($modified_data)) {
+       	// 		return;
+    	// 	}
 
-    		$product_exists_in_lookup_table = (bool) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}wc_product_meta_lookup WHERE product_id = %d", $product_id));
+    	// 	$product_exists_in_lookup_table = (bool) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}wc_product_meta_lookup WHERE product_id = %d", $product_id));
 
-    		$product_lookup_keys = array('_price', '_regular_price', '_sale_price_dates_from', '_sale_price_dates_to', '_sku', '_stock', '_stock_status', '_manage_stock', '_downloadable', '_virtual', '_thumbnail_id');
-    		$lookup_already_synced = in_array($product_id, $this->wc_lookuptable_after_save_synced, true);
-    		$sync_required = !$product_exists_in_lookup_table || array_intersect($modified_data, $product_lookup_keys);
+    	// 	$product_lookup_keys = array('_price', '_regular_price', '_sale_price_dates_from', '_sale_price_dates_to', '_sku', '_stock', '_stock_status', '_manage_stock', '_downloadable', '_virtual', '_thumbnail_id');
+    	// 	$lookup_already_synced = in_array($product_id, $this->wc_lookuptable_after_save_synced, true);
+    	// 	$sync_required = !$product_exists_in_lookup_table || array_intersect($modified_data, $product_lookup_keys);
 
-    		$product = wc_get_product($product_id);
-    		if (!$product) {
-        		return;
-    		}
-    		$taxonomy_keys = wc_get_attribute_taxonomy_names();
-    		if (array_intersect($modified_data, $taxonomy_keys) && class_exists('\Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore')) {
-        		wc_get_container()->get(\Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore::class)->on_product_changed($product);
-    		}   
-    		if (!$lookup_already_synced && $sync_required) {
+    	// 	$product = wc_get_product($product_id);
+    	// 	if (!$product) {
+        // 		return;
+    	// 	}
+    	// 	$taxonomy_keys = wc_get_attribute_taxonomy_names();
+    	// 	if (array_intersect($modified_data, $taxonomy_keys) && class_exists('\Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore')) {
+        // 		wc_get_container()->get(\Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore::class)->on_product_changed($product);
+    	// 	}   
+    	// 	if (!$lookup_already_synced && $sync_required) {
 
-        		// Retrieve sales price
-        		$regular_price = $product->get_regular_price();
+        // 		// Retrieve sales price
+        // 		$regular_price = $product->get_regular_price();
 
-        		if ($regular_price) {
+        // 		if ($regular_price) {
 
-					$wholesale_price = $regular_price - $regular_price * 0.10;
+		// 			$wholesale_price = $regular_price - $regular_price * 0.10;
 
-					// Update or insert wholesale_customer_wholesale_price
-					$meta_key = 'wholesale_customer_wholesale_price';
-					$existing_meta_value = $wpdb->get_var($wpdb->prepare("SELECT meta_value FROM {$wpdb->prefix}postmeta WHERE post_id = %d AND meta_key = %s", $product_id, $meta_key));
+		// 			// Update or insert wholesale_customer_wholesale_price
+		// 			$meta_key = 'wholesale_customer_wholesale_price';
+		// 			$existing_meta_value = $wpdb->get_var($wpdb->prepare("SELECT meta_value FROM {$wpdb->prefix}postmeta WHERE post_id = %d AND meta_key = %s", $product_id, $meta_key));
 		
-					if ($existing_meta_value) {
-						// Update existing meta value
-						$wpdb->update(
-							$wpdb->prefix . 'postmeta',
-							array('meta_value' => $wholesale_price),
-							array('post_id' => $product_id, 'meta_key' => $meta_key),
-							array('%f'),
-							array('%d', '%s')
-						);
-					} else {
-						// Insert new meta value
-						$wpdb->insert(
-							$wpdb->prefix . 'postmeta',
-							array('post_id' => $product_id, 'meta_key' => $meta_key, 'meta_value' => $wholesale_price),
-							array('%d', '%s', '%f')
-						);
-					}
+		// 			if ($existing_meta_value) {
+		// 				// Update existing meta value
+		// 				$wpdb->update(
+		// 					$wpdb->prefix . 'postmeta',
+		// 					array('meta_value' => $wholesale_price),
+		// 					array('post_id' => $product_id, 'meta_key' => $meta_key),
+		// 					array('%f'),
+		// 					array('%d', '%s')
+		// 				);
+		// 			} else {
+		// 				// Insert new meta value
+		// 				$wpdb->insert(
+		// 					$wpdb->prefix . 'postmeta',
+		// 					array('post_id' => $product_id, 'meta_key' => $meta_key, 'meta_value' => $wholesale_price),
+		// 					array('%d', '%s', '%f')
+		// 				);
+		// 			}
 
-            		// Disable price syncing for composite products
-            		add_filter('woocommerce_composite_update_price_meta', '__return_false');
+        //     		// Disable price syncing for composite products
+        //     		add_filter('woocommerce_composite_update_price_meta', '__return_false');
 
-            		// Track that this product has been synced
-            		$this->wc_lookuptable_after_save_synced[] = $product_id;
-     			}
-    		} else {
-        		// Clear WC caches only when editing WC core fields
-        		$this->clear_wc_caches($product_id);
-    		}
-		}
+        //     		// Track that this product has been synced
+        //     		$this->wc_lookuptable_after_save_synced[] = $product_id;
+     	// 		}
+    	// 	} else {
+        // 		// Clear WC caches only when editing WC core fields
+        // 		$this->clear_wc_caches($product_id);
+    	// 	}
+		// }
 
 		function clear_wc_caches( $product ) {
 			if ( is_int( $product ) ) {

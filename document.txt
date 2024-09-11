@@ -1,7 +1,6 @@
-removed line 216, 56, 36 for sale_price price 
+removed '_sale_price' after line 216, 56, 36
 remove _sale_price from line 348
 added if statement for wholesale price and get the value of regular price in $regular_price variable after line 363  
-removed 365, 366, 367 and 368
+removed set statement after line 364
 added regular price insted of sale price in line
- 'formatted' => array('data' => '_regular_price', 'renderer' => 'html'),
- in line 571
+ 'formatted' => array('data' => '_regular_price', 'renderer' => 'html'),   line 571
