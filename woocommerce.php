@@ -33,7 +33,7 @@ if (!class_exists('WP_Sheet_Editor_WooCommerce_Teaser')) {
 				'ID',
 				'post_title',
 				'_sku',
-				'_sale_price',
+				'_regular_price',
 				'_manage_stock',
 				'_stock_status',
 				'_stock',
@@ -51,7 +51,7 @@ if (!class_exists('WP_Sheet_Editor_WooCommerce_Teaser')) {
 			$this->variation_columns = apply_filters('vg_sheet_editor/woocommerce/teasers/allowed_variation_columns', array(
 				'ID',
 				'_sku',
-				'_sale_price',
+				'_regular_price',
 				'_manage_stock',
 				'_stock_status',
 				'_stock',
@@ -209,7 +209,7 @@ if (!class_exists('WP_Sheet_Editor_WooCommerce_Teaser')) {
 				// used by all parent products or all variations, not fields used by some parents only.
 				// That's why in this case, we need to check the product type and disable them manually
 				if ($product_type === 'variable') {
-					$locked_keys[] = '_sale_price';
+					$locked_keys[] = '_regular_price';
 					$locked_keys[] = '_sale_price_dates_from';
 					$locked_keys[] = '_sale_price_dates_to';
 				}
@@ -340,7 +340,7 @@ if (!class_exists('WP_Sheet_Editor_WooCommerce_Teaser')) {
 
     		$product_exists_in_lookup_table = (bool) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}wc_product_meta_lookup WHERE product_id = %d", $product_id));
 
-    		$product_lookup_keys = array('_price', '_sale_price', '_sale_price_dates_from', '_sale_price_dates_to', '_sku', '_stock', '_stock_status', '_manage_stock', '_downloadable', '_virtual', '_thumbnail_id');
+    		$product_lookup_keys = array('_price', '_regular_price', '_sale_price_dates_from', '_sale_price_dates_to', '_sku', '_stock', '_stock_status', '_manage_stock', '_downloadable', '_virtual', '_thumbnail_id');
     		$lookup_already_synced = in_array($product_id, $this->wc_lookuptable_after_save_synced, true);
     		$sync_required = !$product_exists_in_lookup_table || array_intersect($modified_data, $product_lookup_keys);
 
@@ -355,13 +355,11 @@ if (!class_exists('WP_Sheet_Editor_WooCommerce_Teaser')) {
     		if (!$lookup_already_synced && $sync_required) {
 
         		// Retrieve sales price
-        		$sale_price = $product->get_sale_price();
+        		$regular_price = $product->get_regular_price();
 
-        		if ($sale_price) {
+        		if ($regular_price) {
 
-					$regular_price = $sale_price + $sale_price * 0.10;
-					$weight = $sale_price * 0.10;
-					$wholesale_price = $sale_price - $sale_price * 0.10;
+					$wholesale_price = $regular_price - $regular_price * 0.10;
 
 					// Update or insert wholesale_customer_wholesale_price
 					$meta_key = 'wholesale_customer_wholesale_price';
@@ -387,16 +385,6 @@ if (!class_exists('WP_Sheet_Editor_WooCommerce_Teaser')) {
 
             		// Disable price syncing for composite products
             		add_filter('woocommerce_composite_update_price_meta', '__return_false');
-
-            		// Set the regular price to 10% of sales price
-         			$product->set_regular_price($regular_price);
-           			$product->save();
-
-					$product->set_weight($weight);
-           			$product->save();
-
-            		// Re-enable the filter
-            		// remove_filter('woocommerce_composite_update_price_meta', '__return_false');
 
             		// Track that this product has been synced
             		$this->wc_lookuptable_after_save_synced[] = $product_id;
@@ -568,7 +556,7 @@ if (!class_exists('WP_Sheet_Editor_WooCommerce_Teaser')) {
 				'title' => __('Sale Price', 'vg_sheet_editor' ),
 				'type' => '',
 				'supports_formulas' => true,
-				'formatted' => array('data' => '_sale_price', 'renderer' => 'html'),
+				'formatted' => array('data' => '_regular_price', 'renderer' => 'html'),
 				'allow_to_hide' => true,
 				'allow_to_rename' => true,
 			));
