@@ -10,6 +10,3 @@ function custom_out_of_stock_text($link, $product) {
     return $link;
 }
 ?>
-
-
-input this code before the add_footer action
