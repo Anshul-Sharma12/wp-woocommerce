@@ -1,4 +1,3 @@
-<?php
 // Add quantity input and "Add to Cart" button to the product listing page
 add_action('woocommerce_after_shop_loop_item', 'custom_add_quantity_field_on_loop', 20);
 
@@ -39,7 +38,7 @@ function custom_add_quantity_field_on_loop() {
                 ));
                 ?>
 
-                <button type="submit" class="button alt" style="height:35px; margin-top: 10px;">
+                <button type="submit" class="button alt" style="height:35px;">
                     <?php esc_html_e('Add to Cart', 'woocommerce'); ?>
                 </button>
                 <?php
@@ -52,7 +51,7 @@ function custom_add_quantity_field_on_loop() {
                     'max_value'   => $product->get_max_purchase_quantity(), // Maximum quantity
                 ));
                 ?>
-                <button type="submit" class="button alt" style="height:35px; margin-top: 10px;">
+                <button type="submit" class="button alt" style="height:35px;">
                     <?php echo esc_html($product->add_to_cart_text()); ?>
                 </button>
                 <?php
@@ -83,3 +82,4 @@ function custom_enqueue_scripts() {
     ));
 }
 add_action('wp_enqueue_scripts', 'custom_enqueue_scripts');
+
