@@ -1,0 +1,17 @@
+/* assets/css/custom-styles.css */
+.cart {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.cart input.qty {
+    width: 80px;
+    margin: 10px 10px 10px 0; /* Adjust margin for spacing */
+}
+.variations-select {
+    margin-right: 100px; /* Add margin for better spacing */
+}
+.cart-message {
+    margin-top: 10px;
+    color: green; /* Optional: Change message color */
+}
