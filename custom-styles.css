@@ -9,7 +9,10 @@
     margin: 10px 10px 10px 0; /* Adjust margin for spacing */
 }
 .variations-select {
-    margin-right: 100px; /* Add margin for better spacing */
+    margin-right: 50px; ;
+}
+.variation-price {
+    margin-right: 50px; /* Add margin for better spacing */
 }
 .cart-message {
     margin-top: 10px;

@@ -9,17 +9,14 @@ function custom_add_quantity_field_on_loop() {
         ?>
         <form class="cart" action="<?php echo esc_url($product->add_to_cart_url()); ?>" method="post" enctype="multipart/form-data">
             <?php
-            // Check if the product is variable
             if ($product->is_type('variable')) {
-                // Get available variations
                 $available_variations = $product->get_available_variations();
                 ?>
                 <select class="variations-select" name="variation_id" required>
                     <option value=""><?php esc_html_e('Size', 'woocommerce'); ?></option>
                     <?php foreach ($available_variations as $variation) : ?>
-                        <option value="<?php echo esc_attr($variation['variation_id']); ?>">
+                        <option value="<?php echo esc_attr($variation['variation_id']); ?>" data-price="<?php echo esc_attr($variation['display_price']); ?>">
                             <?php
-                            // Display variation attributes
                             $variation_attributes = '';
                             foreach ($variation['attributes'] as $attribute_name => $attribute_value) {
                                 $variation_attributes .= esc_html($attribute_value) . ' ';
@@ -30,7 +27,8 @@ function custom_add_quantity_field_on_loop() {
                     <?php endforeach; ?>
                 </select>
 
-                <!-- Quantity input field for variable products -->
+                <div class="variation-price"></div>
+
                 <?php
                 woocommerce_quantity_input(array(
                     'input_value' => 1, // Default quantity
